@@ -32,7 +32,7 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- $HOME/scripts/lock.sh
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
-exec --no-startup-id nm-applet
+# exec --no-startup-id nm-applet
 
 exec --no-startup-id xinput set-prop "ASUE1300:00 04F3:3104 Touchpad" "libinput Natural Scrolling Enabled" 1
 
@@ -230,9 +230,14 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 bindsym $mod+d exec ~/.config/rofi/launchers/type-1/launcher.sh
+
 bindsym $mod+shift+x exec ~/scripts/lock.sh
 
-bindsym Print exec screenshot
+# Fullscreen screenshot (Shift + Print)
+bindsym Shift+Print exec sh -c 'NOW=$(date +%d-%b-%Y_%H-%M-%S) && maim --format png > "$HOME/screenshots/screenshot_$NOW.png" && xclip -selection clipboard -t image/png "$HOME/screenshots/screenshot_$NOW.png"'
+
+# Area selection screenshot (Print)
+bindsym Print exec sh -c 'NOW=$(date +%d-%b-%Y_%H-%M-%S) && maim --format png --select > "$HOME/screenshots/screenshot_$NOW.png" && xclip -selection clipboard -t image/png "$HOME/screenshots/screenshot_$NOW.png"'
 
 bindsym $mod+Shift+f exec firefox
 

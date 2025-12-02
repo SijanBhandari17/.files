@@ -97,17 +97,21 @@ vim.g.have_nerd_font = true
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
+vim.opt.expandtab = false
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 0
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+vim.opt.copyindent = true
+vim.opt.preserveindent = true
 vim.o.swapfile = false
+
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
-vim.opt.smartindent = true
-
-vim.opt.tabstop = 2 -- Number of visual spaces per TAB
-vim.opt.shiftwidth = 2 -- Number of spaces for each indentation
-vim.opt.expandtab = true -- Convert tabs to spaces
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
@@ -732,42 +736,42 @@ require('lazy').setup({
       }
     end,
   },
-  {
-    'stevearc/conform.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    config = function()
-      local conform = require 'conform'
-
-      conform.setup {
-        formatters_by_ft = {
-          javascript = { 'prettier' },
-          typescript = { 'prettier' },
-          javascriptreact = { 'prettier' },
-          typescriptreact = { 'prettier' },
-          css = { 'prettier' },
-          html = { 'prettier' },
-          json = { 'prettier' },
-          yaml = { 'prettier' },
-          markdown = { 'prettier' },
-          lua = { 'stylua' },
-          python = { 'isort', 'black' },
-        },
-        format_on_save = {
-          lsp_fallback = true,
-          async = false,
-          timeout_ms = 1000,
-        },
-      }
-
-      vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
-        conform.format {
-          lsp_fallback = true,
-          async = false,
-          timeout_ms = 1000,
-        }
-      end, { desc = 'Format file or range (in visual mode)' })
-    end,
-  },
+  -- {
+  --   'stevearc/conform.nvim',
+  --   event = { 'BufReadPre', 'BufNewFile' },
+  --   config = function()
+  --     local conform = require 'conform'
+  --
+  --     conform.setup {
+  --       formatters_by_ft = {
+  --         javascript = { 'prettier' },
+  --         typescript = { 'prettier' },
+  --         javascriptreact = { 'prettier' },
+  --         typescriptreact = { 'prettier' },
+  --         css = { 'prettier' },
+  --         html = { 'prettier' },
+  --         json = { 'prettier' },
+  --         yaml = { 'prettier' },
+  --         markdown = { 'prettier' },
+  --         lua = { 'stylua' },
+  --         python = { 'isort', 'black' },
+  --       },
+  --       format_on_save = {
+  --         lsp_fallback = true,
+  --         async = false,
+  --         timeout_ms = 1000,
+  --       },
+  --     }
+  --
+  --     vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
+  --       conform.format {
+  --         lsp_fallback = true,
+  --         async = false,
+  --         timeout_ms = 1000,
+  --       }
+  --     end, { desc = 'Format file or range (in visual mode)' })
+  --   end,
+  -- },
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
