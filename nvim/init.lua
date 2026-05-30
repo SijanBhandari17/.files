@@ -184,6 +184,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+vim.keymap.set("n", "<leader>e", function()
+  local diagnostics = vim.diagnostic.get(0, {
+    lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+  })
+
+  if #diagnostics > 0 then
+    local msg = diagnostics[1].message
+    vim.fn.setreg("+", msg)
+    print("Copied: " .. msg)
+  else
+    print("No diagnostic on this line")
+  end
+end)
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -196,6 +210,15 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+vim.keymap.set('n', '<leader>vs', function()
+  local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
+  if #diagnostics == 0 then return end
+  local d = diagnostics[1]
+  -- move to start col, enter visual, move to end col
+  vim.api.nvim_win_set_cursor(0, { d.lnum + 1, d.col })
+  vim.cmd('normal! v')
+  vim.api.nvim_win_set_cursor(0, { d.end_lnum + 1, d.end_col - 1 })
+end, { desc = 'Visually select diagnostic range' })
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -260,7 +283,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -306,7 +329,7 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -346,7 +369,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -406,7 +429,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', require('telescope.builtin').oldfiles, { desc = '[S]earch Recent Files' })
-      vim.keymap.set('n', '<leader><leader>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', require('telescope.builtin').buffers,
+        { desc = '[ ] Find existing buffers' })
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -457,7 +481,7 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -648,7 +672,7 @@ require('lazy').setup({
           cmd = {
             'clangd',
             '--background-index',
-            '--header-insertion=iwyu',
+            '--header-insertion=never',
             '--compile-commands-dir=.',
             '--query-driver=/usr/bin/g++,/usr/bin/gcc',
             '--all-scopes-completion',
@@ -736,42 +760,44 @@ require('lazy').setup({
       }
     end,
   },
-  -- {
-  --   'stevearc/conform.nvim',
-  --   event = { 'BufReadPre', 'BufNewFile' },
-  --   config = function()
-  --     local conform = require 'conform'
-  --
-  --     conform.setup {
-  --       formatters_by_ft = {
-  --         javascript = { 'prettier' },
-  --         typescript = { 'prettier' },
-  --         javascriptreact = { 'prettier' },
-  --         typescriptreact = { 'prettier' },
-  --         css = { 'prettier' },
-  --         html = { 'prettier' },
-  --         json = { 'prettier' },
-  --         yaml = { 'prettier' },
-  --         markdown = { 'prettier' },
-  --         lua = { 'stylua' },
-  --         python = { 'isort', 'black' },
-  --       },
-  --       format_on_save = {
-  --         lsp_fallback = true,
-  --         async = false,
-  --         timeout_ms = 1000,
-  --       },
-  --     }
-  --
-  --     vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
-  --       conform.format {
-  --         lsp_fallback = true,
-  --         async = false,
-  --         timeout_ms = 1000,
-  --       }
-  --     end, { desc = 'Format file or range (in visual mode)' })
-  --   end,
-  -- },
+  {
+    'stevearc/conform.nvim',
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = function()
+      local conform = require 'conform'
+
+      conform.setup {
+        formatters_by_ft = {
+          -- javascript = { 'prettier' },
+          -- typescript = { 'prettier' },
+          -- javascriptreact = { 'prettier' },
+          -- typescriptreact = { 'prettier' },
+          -- css = { 'prettier' },
+          -- html = { 'prettier' },
+          -- json = { 'prettier' },
+          -- yaml = { 'prettier' },
+          -- markdown = { 'prettier' },
+          -- lua = { 'stylua' },
+          -- python = { 'isort', 'black' },
+          c = { "clang-format" },
+          cpp = { "clang-format" },
+        },
+        format_on_save = {
+          lsp_fallback = true,
+          async = false,
+          timeout_ms = 1000,
+        },
+      }
+
+      vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
+        conform.format {
+          lsp_fallback = true,
+          async = false,
+          timeout_ms = 1000,
+        }
+      end, { desc = 'Format file or range (in visual mode)' })
+    end,
+  },
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
@@ -883,8 +909,8 @@ require('lazy').setup({
           },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
-          { name = 'buffer' }, -- Add this
-          { name = 'cmdline' }, -- Add this
+          { name = 'buffer' },   -- Add this
+          { name = 'cmdline' },  -- Add this
           { name = 'nvim_lua' }, -- Add this
           { name = 'path' },
           { name = 'nvim_lsp_signature_help' },
@@ -933,27 +959,6 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  -- { -- You can easily change to a different colorscheme.
-  --   -- Change the name of the colorscheme plugin below, and then
-  --   -- change the command in the config to whatever the name of that colorscheme is.
-  --   --
-  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  --   'folke/tokyonight.nvim',
-  --   priority = 1000, -- Make sure to load this before all the other start plugins.
-  --   config = function()
-  --     ---@diagnostic disable-next-line: missing-fields
-  --     require('tokyonight').setup {
-  --       styles = {
-  --         comments = { italic = false }, -- Disable italics in comments
-  --       },
-  --     }
-  --
-  --     -- Load the colorscheme here.
-  --     -- Like many other themes, this one has different styles, and you could load
-  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  --     vim.cmd.colorscheme 'tokyonight-night'
-  --   end,
-  -- },
   {
     'zenbones-theme/zenbones.nvim',
     dependencies = 'rktjmp/lush.nvim',

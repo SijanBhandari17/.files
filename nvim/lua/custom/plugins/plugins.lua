@@ -56,7 +56,9 @@ return {
       return opts
     end,
   },
-
+  {
+    'github/copilot.vim',
+  },
   -- Catppuccin theme
   {
     'catppuccin/nvim',
