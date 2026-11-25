@@ -155,6 +155,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 assign [class="firefox"] $ws2
 assign [class="Gnome-terminal"] $ws1
 assign [class="Spotify"] $ws4
+assign [class="Metrolist"] $ws4
 
 # reload the configuration file
 bindsym $mod+Shift+c reload

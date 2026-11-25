@@ -14,25 +14,34 @@ return {
     config = function()
       local harpoon = require 'harpoon'
       harpoon:setup()
+      local map = vim.keymap.set
 
       -- Basic keymaps
       vim.keymap.set('n', '<leader>a', function()
         harpoon:list():append()
       end, { desc = 'Harpoon: Add file' })
+
       vim.keymap.set('n', '<C-e>', function()
         harpoon.ui:toggle_quick_menu(harpoon:list())
       end, { desc = 'Harpoon: Toggle menu' })
+
+      vim.keymap.set('n', '<leader>hr', function()
+        require('harpoon'):list():remove()
+      end, { desc = 'Remove current file from Harpoon' })
 
       -- Navigate to specific files
       vim.keymap.set('n', '<C-1>', function()
         harpoon:list():select(1)
       end, { desc = 'Harpoon: File 1' })
+
       vim.keymap.set('n', '<C-2>', function()
         harpoon:list():select(2)
       end, { desc = 'Harpoon: File 2' })
+
       vim.keymap.set('n', '<C-3>', function()
         harpoon:list():select(3)
       end, { desc = 'Harpoon: File 3' })
+
       vim.keymap.set('n', '<C-4>', function()
         harpoon:list():select(4)
       end, { desc = 'Harpoon: File 4' })
@@ -59,41 +68,8 @@ return {
   {
     'github/copilot.vim',
   },
-  -- Catppuccin theme
-  {
-    'catppuccin/nvim',
-    name = 'catppuccin',
-    enabled = false,
-    lazy = false,
-    priority = 1000, -- make sure to load this before all the other plugins
-    config = function()
-      require('catppuccin').setup {
-        flavour = 'mocha', -- latte, frappe, macchiato, mocha
-        term_colors = true,
-        transparent_background = false, -- Set to true if you want transparency
-        no_italic = false,
-        no_bold = false,
-        integrations = {
-          cmp = true,
-          gitsigns = true,
-          nvimtree = true,
-          treesitter = true,
-          notify = true,
-          mini = {
-            enabled = true,
-            indentscope_color = '',
-          },
-          telescope = {
-            enabled = true,
-          },
-          which_key = true,
-        },
-      }
 
-      -- Set colorscheme after options
-      vim.cmd.colorscheme 'catppuccin'
-    end,
-  },
+  -- Catppuccin theme
   -- Emmet for HTML and CSS abbreviations
   {
     'mattn/emmet-vim',

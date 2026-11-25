@@ -184,17 +184,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-vim.keymap.set("n", "<leader>e", function()
+vim.keymap.set('n', '<leader>e', function()
   local diagnostics = vim.diagnostic.get(0, {
-    lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+    lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
   })
 
   if #diagnostics > 0 then
     local msg = diagnostics[1].message
-    vim.fn.setreg("+", msg)
-    print("Copied: " .. msg)
+    vim.fn.setreg('+', msg)
+    print('Copied: ' .. msg)
   else
-    print("No diagnostic on this line")
+    print 'No diagnostic on this line'
   end
 end)
 
@@ -211,12 +211,14 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 vim.keymap.set('n', '<leader>vs', function()
-  local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
-  if #diagnostics == 0 then return end
+  local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line '.' - 1 })
+  if #diagnostics == 0 then
+    return
+  end
   local d = diagnostics[1]
   -- move to start col, enter visual, move to end col
   vim.api.nvim_win_set_cursor(0, { d.lnum + 1, d.col })
-  vim.cmd('normal! v')
+  vim.cmd 'normal! v'
   vim.api.nvim_win_set_cursor(0, { d.end_lnum + 1, d.end_col - 1 })
 end, { desc = 'Visually select diagnostic range' })
 -- [[ Configure and install plugins ]]
@@ -283,7 +285,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  {                     -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -329,7 +331,7 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -369,7 +371,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -429,8 +431,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', require('telescope.builtin').oldfiles, { desc = '[S]earch Recent Files' })
-      vim.keymap.set('n', '<leader><leader>', require('telescope.builtin').buffers,
-        { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -481,7 +482,7 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim',       opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -673,7 +674,6 @@ require('lazy').setup({
             'clangd',
             '--background-index',
             '--header-insertion=never',
-            '--compile-commands-dir=.',
             '--query-driver=/usr/bin/g++,/usr/bin/gcc',
             '--all-scopes-completion',
             '--completion-style=detailed',
@@ -681,6 +681,7 @@ require('lazy').setup({
             '--pch-storage=memory',
             '-j=4',
             '--fallback-style=Google',
+            '--compile-commands-dir=build', -- Keep this one!
           },
         },
         ts_ls = {},
@@ -768,19 +769,20 @@ require('lazy').setup({
 
       conform.setup {
         formatters_by_ft = {
-          -- javascript = { 'prettier' },
-          -- typescript = { 'prettier' },
-          -- javascriptreact = { 'prettier' },
-          -- typescriptreact = { 'prettier' },
+          javascript = { 'prettier' },
+          typescript = { 'prettier' },
+          javascriptreact = { 'prettier' },
+          typescriptreact = { 'prettier' },
           -- css = { 'prettier' },
           -- html = { 'prettier' },
-          -- json = { 'prettier' },
+          json = { 'prettier' },
+          jsonc = { 'prettier' },
           -- yaml = { 'prettier' },
           -- markdown = { 'prettier' },
           -- lua = { 'stylua' },
           -- python = { 'isort', 'black' },
-          c = { "clang-format" },
-          cpp = { "clang-format" },
+          c = { 'clang-format' },
+          cpp = { 'clang-format' },
         },
         format_on_save = {
           lsp_fallback = true,
@@ -909,8 +911,8 @@ require('lazy').setup({
           },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
-          { name = 'buffer' },   -- Add this
-          { name = 'cmdline' },  -- Add this
+          { name = 'buffer' }, -- Add this
+          { name = 'cmdline' }, -- Add this
           { name = 'nvim_lua' }, -- Add this
           { name = 'path' },
           { name = 'nvim_lsp_signature_help' },
@@ -967,42 +969,74 @@ require('lazy').setup({
     -- you can set set configuration options here
     config = function()
       vim.g.zenbones_darken_comments = 45
-      vim.cmd.colorscheme 'tokyobones'
+      vim.cmd.colorscheme 'nordbones'
     end,
   },
 
-  -- {
-  --   'morhetz/gruvbox',
-  --   lazy = false, -- load immediately
-  --   priority = 1000, -- load before other plugins
-  --   config = function()
-  --     vim.cmd 'colorscheme gruvbox'
-  --   end,
-  -- },
-  { -- Highlight, edit, and navigate code
+  --
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    enabled = false,
+    lazy = false,
+    priority = 1000, -- make sure to load this before all the other plugins
+    config = function()
+      require('catppuccin').setup {
+        flavour = 'mocha', -- latte, frappe, macchiato, mocha
+        term_colors = true,
+        transparent_background = false, -- Set to true if you want transparency
+        no_italic = false,
+        no_bold = false,
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          notify = true,
+          mini = {
+            enabled = true,
+            indentscope_color = '',
+          },
+          telescope = {
+            enabled = true,
+          },
+          which_key = true,
+        },
+      }
+
+      -- Set colorscheme after options
+      vim.cmd.colorscheme 'catppuccin'
+    end,
+  },
+  {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    config = function()
+      local parsers = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+      }
+      require('nvim-treesitter').install(parsers)
+
+      vim.api.nvim_create_autocmd('FileType', {
+        callback = function(args)
+          if pcall(vim.treesitter.start, args.buf) then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+    end,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
